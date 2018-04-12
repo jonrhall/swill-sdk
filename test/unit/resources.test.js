@@ -1,12 +1,11 @@
+/* global reRequire, mockSocketIO, expect */
+
 describe('Resources', () => {
-  const actorsMock = require('../mocks/actors.mock');
+  let resourcesModule;
 
-  global.mockRequire('../../src/resources/actors', actorsMock);
-
-  const resourcesModule = require('../../src/core/resources');
-
-  after(() => {
-    global.mockRequire.stop('../../src/resources/actors');
+  beforeEach(() => {
+    mockSocketIO();
+    resourcesModule = reRequire('../../src/core/resources');
   });
 
   it('exports an actors object', () => {

@@ -17,6 +17,9 @@
     "expect": true,
     "sinon": true
   },
+  "rules": {
+    "semi": "error"
+  },
   "parser": "babel-eslint",
   "plugins": [],
   "extends": "eslint:recommended"

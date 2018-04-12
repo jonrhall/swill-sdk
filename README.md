@@ -16,7 +16,7 @@ _Prerequisites_:
 ```
 
 ## Some questions
- 
+
 ### What is this?
 
 A software development kit (SDK) for users who want to develop their own apps for a [CraftBeerPi3](https://github.com/Manuel83/craftbeerpi3) instance.
@@ -28,8 +28,8 @@ CraftBeerPi3's API is complex and hard to manage on its own. This project aims t
 
 ### Who would use it?
 
-Anyone who loves CraftBeerPi3 already and wants to develop an app that controls or listens CraftBeerPi3 in some custom way. That could be a simple Node app to create brewing notifications, or as complex as an entirely new, custom interface that you create for your own CraftBeerPi3 installation.
- 
+Anyone who loves CraftBeerPi3 already and wants to develop an app that controls or listens to CraftBeerPi3 in some custom way. That could be as simple as aNode app to create brewing notifications, or as complex as an entirely new, custom interface that you create for your own CraftBeerPi3 installation.
+
 ## Usage
 
 Swill SDK can be used as both a Node module and a client-side library. When `npm install` is run, the client sdk is automatically bundled into `lib/swill-sdk.min.js`.
@@ -85,7 +85,7 @@ const actors = await sdk.resources.actors.getActors();
 
 ## Configuration
 
-By default, Swill SDK assumes your CraftBeerPi3 HTTP and websocket servers are both located at `http://localhost:5000`. This is normally fine if you haven't configured custom ports and routing for your CBPi instance. 
+By default, Swill SDK assumes your CraftBeerPi3 HTTP and websocket servers are both located at `http://localhost:5000`. This is normally fine if you haven't configured custom ports and routing for your CBPi instance.
 
 If you are running the SDK on another machine, host or port entirely, you will need to tell the SDK where to look. Those overrides are provided in the form of a configuration object you pass to Swill SDK when you instantiate:
 ```javascript
@@ -104,7 +104,7 @@ Make sure you've got a CraftBeerPi3 instance running locally, then run the devel
 
 ### Development Server
 
-Inside of the install location for Swill SDK, if you run the command `npm run dev:server` you will spawn a continuously running development server. Open your browser to `<ip-address>:8080/index.html` and open the browser's development console. Here is a sample set of commands you can run:
+Inside of the install location for Swill SDK, if you run the command `npm run dev:server` you will spawn a continuously running development server. Open your browser to `http://<ip-address>:8080/index.html` and open the browser's development console. Here is a sample set of commands you can run:
 ```javascript
 > const sdk = SwillSDK({socketAddress:`http://${window.location.hostname}:5000`,httpAddress:`http://${window.location.hostname}:5000`});
 > undefined
@@ -152,7 +152,7 @@ CORS(app) # AND ALSO ADD THIS
 @app.route('/')
 def index():
     return redirect('ui')
-	
+
 ...
 ```
 3. Restart your CBPi instance:

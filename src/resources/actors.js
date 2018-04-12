@@ -15,7 +15,7 @@ socketEvents.forEach(event => socketClient.on(
 
 module.exports = {
   // Get all the actor resources
-  getActors: async() => {
+  getActors: async () => {
     return (await httpClient.get('/system/dump')).actors;
   },
   // Register listeners for updates to actor resources
