@@ -13,7 +13,17 @@ let cache = {};
 
 module.exports = {
   // Prepend the CraftBeerPi server route to the specified API route
-  get: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options)
+  get: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options),
+  post: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'POST', options),
+  put: async (route, data) => {
+    return await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'PUT', Object.assign({
+      body: JSON.stringify(data),
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json;charset=UTF-8'
+      }
+    }));
+  }
 };
 
 // Make an API request to CraftBeerPi
@@ -38,7 +48,11 @@ async function makeRequest(route, method, options){
   try {
     response = await (await fetch(route, Object.assign({ method }, options))).json();
   } catch(err){
-    throw new Error(`Error retrieving ${route}: ${err}`);
+    // If the response doesn't contain any JSON, that's fine, CBPi frequently uses HTTP 204 status
+    // codes (Empty Response) in its POST responses. In those cases the .json() call will fail.
+    // That's fine, since there is no response to parse anyways and the response can stay null.
+    if(method === 'POST' && err.toString() !== 'SyntaxError: Unexpected end of JSON input')
+      throw new Error(`Error retrieving ${route}: ${err}`);
   }
 
   // Cache the response
