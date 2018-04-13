@@ -96,13 +96,23 @@ const sdk = SwillSDK({
 });
 ```
 
+## CraftBeerPi3 compatibility
+
+Currently, Swill SDK only support [CraftBeerPi3 v3.0](https://github.com/Manuel83/craftbeerpi3/releases/tag/3.0) installations. It is our belief that CraftBeerPi 3.0 is the best, most stable release of the app to date.
+
+### Why?
+
+CBPi v3.1 introduces a lot of changes that have not yet been fully fleshed out, nor are fully compatible with 3.0. Furthermore, it is still marked as an Alpha release and has stability problems. We do not recommend using this version of the software at this time.
+
+CBPi v2.x and earlier are old releases and should be seen as deprecated in favor of CBPi v3.0.
+
 ## Try it out!
 
 Just want to try out the SDK, without the fuss of creating a separate Node package or UI project? You can!
 
 Make sure you've got a CraftBeerPi3 instance running locally, then run the development server (if you want to test the client-side library) or the Node sample (if you want to test the Node.js module).
 
-### Development Server
+### Development server
 
 Inside of the install location for Swill SDK, if you run the command `npm run dev:server` you will spawn a continuously running development server. Open your browser to `http://<ip-address>:8080/index.html` and open the browser's development console. Here is a sample set of commands you can run:
 ```javascript
@@ -127,7 +137,11 @@ undefined
 ## Gotchas
 
 ### CORS
-If you are using the client-side SDK and you are not running your resources on the same host and port as CraftBeerPi3 (generally by dropping your files directly in the `craftbeerpi3/modules/ui/static/` folder), you will run into CORS (Cross-Origin Request Scripting) request issues with the CraftBeerPi3 server. For example, this will happen when you attempt to run the [development server](#development-server) By default, CraftBeerPi3 does not support requests from origins other than its own. This can be remedied a few ways. Either move your files to the folder mentioned above so that they run on the same host and port as CBPi, or do the following to enable CORS support in CraftBeerPi3.
+If you are using the client-side SDK and you are not running your resources on the same host and port as CraftBeerPi3 (generally by dropping your files directly in the `craftbeerpi3/modules/ui/static/` folder), you will run into CORS (Cross-Origin Request Scripting) request issues with the CraftBeerPi3 server.
+
+For example, this will happen when you attempt to run the [development server](#development-server).
+
+By default, CraftBeerPi3 does not support requests from origins other than its own. This can be remedied a few ways. Either move your files to the folder mentioned above so that they run on the same host and port as CBPi, or do the following to enable CORS support in CraftBeerPi3.
 
 #### Installing Flask-CORS
 1. From inside your CraftBeerPi3 directory (normally something like `~/craftbeerpi3/`), install [Flask-CORS](http://flask-cors.readthedocs.io/en/latest/)
