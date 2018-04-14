@@ -11,7 +11,7 @@ const io = require('socket.io-client'),
   listeners = {};
 
 // Middleware for the socket so that we can debug problems.
-socket.onevent = function(packet){
+socket.onevent = packet => {
   // eslint-disable-next-line no-console
   //console.dir(packet);
   onevent.call(this, packet);

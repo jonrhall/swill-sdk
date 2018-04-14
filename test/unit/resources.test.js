@@ -8,7 +8,13 @@ describe('Resources', () => {
     resourcesModule = reRequire('../../src/core/resources');
   });
 
-  it('exports an actors object', () => {
-    expect(resourcesModule.actors).to.be.an('object');
+  [ 'actors', 'kettles', 'fermenters', 'sensors', 'steps' ].forEach(resource => {
+    it(`exports the ${resource} object`, () => {
+      expect(resourcesModule[resource]).to.be.an('object');
+    });
+  });
+
+  it('doesn\'t leak any other objects', () => {
+    expect(Object.keys(resourcesModule).length).to.equal(5);
   });
 });

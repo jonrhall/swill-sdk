@@ -134,10 +134,19 @@ undefined
 > // See what happens next :)
 ```
 
+## Deploying your app with Swill SDK
+
+_If you use Swill SDK as a Node app, you can ignore this section._
+
+If you plan on making your app available in a web browser, you'll either need to host/deploy it to your own personal server, or use your Raspberry Pi and CraftBeerPi to do it for you. Keep in mind that if you go deploy it yourself, you will need to [install CORS for CraftBeerPi](#cors) in order for any web clients to accept responses from the CBPi server in the first place.
+
+It is generally recommended that you run your code bundled with the SDK, copied into the same folder that CraftBeerPi3 hosts its resources from (normally something like `/path/to/craftbeerpi3/modules/ui/static`). Files dropped into that location are available from the same host and port URL that you access CraftBeerPi3 from, by default `http://<raspi-address:5000/ui/static`.
+
 ## Gotchas
 
 ### CORS
-If you are using the client-side SDK and you are not running your resources on the same host and port as CraftBeerPi3 (generally by dropping your files directly in the `craftbeerpi3/modules/ui/static/` folder), you will run into CORS (Cross-Origin Request Scripting) request issues with the CraftBeerPi3 server.
+
+If you are using the client-side SDK and you are not running your resources on the same host and port as CraftBeerPi3 (generally by dropping your files directly in the `craftbeerpi3/modules/ui/static/` folder), you will run into CORS (Cross-Origin Resource Sharing) request issues with the CraftBeerPi3 server.
 
 For example, this will happen when you attempt to run the [development server](#development-server).
 
