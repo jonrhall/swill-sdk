@@ -48,10 +48,10 @@ async function makeRequest(route, method, options){
   try {
     response = await (await fetch(route, Object.assign({ method }, options))).json();
   } catch(err){
-    // If the response doesn't contain any JSON, that's fine, CBPi frequently uses HTTP 204 status
+    // If the response doesn't contain any JSON, it's because CBPi frequently uses HTTP 204 status
     // codes (Empty Response) in its POST responses. In those cases the .json() call will fail.
     // That's fine, since there is no response to parse anyways and the response can stay null.
-    if(method === 'POST' && err.toString() !== 'SyntaxError: Unexpected end of JSON input')
+    if(method !== 'POST' && err.toString() !== 'SyntaxError: Unexpected end of JSON input')
       throw new Error(`Error retrieving ${route}: ${err}`);
   }
 
@@ -82,7 +82,7 @@ function CachedResponse(data){
   return {
     response: data.response || {},
     timestamp: Date.now(),
-    route: data.route || '',
+    route: data.route,
     method: data.method || 'GET'
   };
 }

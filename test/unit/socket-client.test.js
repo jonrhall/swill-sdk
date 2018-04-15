@@ -1,6 +1,6 @@
 /* global reRequire, mockSocketIO, expect */
 
-describe.only('Socket Client', () => {
+describe('Socket Client', () => {
   let socketIoClientMock, socketClient;
 
   beforeEach(() => {
