@@ -1,16 +1,11 @@
-/* global reRequire, mock, expect */
+/* global reRequire, mockHttpFetch, expect */
 
 describe('HTTP Client', () => {
   let fetchMock, httpClient;
 
   beforeEach(() => {
-    fetchMock = reRequire('../mocks/node-fetch.mock');
-    mock('node-fetch', fetchMock);
+    fetchMock = mockHttpFetch();
     httpClient = reRequire('../../src/core/http-client');
-  });
-
-  afterEach(() => {
-    global.mock.stop('node-fetch');
   });
 
   describe('GET requests', () => {

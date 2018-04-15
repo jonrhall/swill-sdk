@@ -17,3 +17,10 @@ global.mockSocketIO = function mockSocketIO(){
   global.mock('socket.io-client', socketIoClientMock);
   return socketIoClientMock;
 };
+
+global.mockHttpFetch = function mockHttpFetch(){
+  global.mock.stop('node-fetch');
+  const fetchMock = global.mock.reRequire('./mocks/node-fetch.mock');
+  global.mock('node-fetch', fetchMock);
+  return fetchMock;
+};
