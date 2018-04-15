@@ -28,7 +28,7 @@ CraftBeerPi3's API is complex and hard to manage on its own. This project aims t
 
 ### Who would use it?
 
-Anyone who loves CraftBeerPi3 already and wants to develop an app that controls or listens to CraftBeerPi3 in some custom way. That could be as simple as aNode app to create brewing notifications, or as complex as an entirely new, custom interface that you create for your own CraftBeerPi3 installation.
+Anyone who loves CraftBeerPi3 already and wants to develop an app that controls or listens to CraftBeerPi3 in some custom way. That could be as simple as Node app to create brewing notifications, or as complex as an entirely new custom interface that you create for your own CraftBeerPi3 installation.
 
 ## Usage
 
@@ -42,7 +42,7 @@ All that is needed to use Swill SDK in the browser is to include it in a script 
 ```html
 <script src="swill-sdk.min.js"></script>
 ```
-The sdk itself will be available on the on global scope via `window.SwillSDK`.
+The SDK itself will be available on the on global scope via `window.SwillSDK`.
 
 ### Node.js
 
@@ -64,30 +64,32 @@ const SwillSDK = require('swill-sdk');
 // Import the library
 const SwillSDK = require('swill-sdk');
 
-// Instantiate a sdk client
+// Instantiate SDK
 const sdk = SwillSDK();
 
 // Do basic things, like listen for events you think you'd like to do something with.
-// Listen for a SWITCH_ACTOR event:
-sdk.socketClient.on('SWITCH_ACTOR', data => {
-  // Do something
-  console.log(data);
-});
-
-// More basic things, like querying the actual CBPi API.
-// Execute GET request:
-const systemDump = await sdk.httpClient.get('/system/dump');
+sdk.resources.sensors.onUpdate((event, data) =>
+    console.log('A sensor update occurred! ${event}, ${data}'));
 
 // Control specific resources, like actors, and get their configuration.
 // Get the actors available:
 const actors = await sdk.resources.actors.getActors();
+
+// Perform more advanced tasks, like setting a kettle's target temperature.
+// Get the kettles list, and set the target temperature to 132. Assume old temp is 100.
+const kettles = await sdk.resources.kettles.getKettles(),
+  promise = kettles[0].setState({target_temp: 132});
+// Before the promise resolves, the temperature will not be updated
+console.log(kettles[0].target_temp) // 100
+console.log(await promise) // {agitator: "", automatic: null, config: {…}, target_temp: "132", id: 1, …} (the updated sensor object itself)
+console.log(kettles[0].target_temp) // 132
 ```
 
 ## Configuration
 
 By default, Swill SDK assumes your CraftBeerPi3 HTTP and websocket servers are both located at `http://localhost:5000`. This is normally fine if you haven't configured custom ports and routing for your CBPi instance.
 
-If you are running the SDK on another machine, host or port entirely, you will need to tell the SDK where to look. Those overrides are provided in the form of a configuration object you pass to Swill SDK when you instantiate:
+If you are running the your code on another machine, host or port entirely, you will need to tell the SDK where to look for CraftBeerPi. Those overrides are provided in the form of a configuration object you pass to Swill SDK when you instantiate:
 ```javascript
 const SwillSDK = require('swill-sdk');
 const sdk = SwillSDK({
@@ -98,7 +100,7 @@ const sdk = SwillSDK({
 
 ## CraftBeerPi3 compatibility
 
-Currently, Swill SDK only support [CraftBeerPi3 v3.0](https://github.com/Manuel83/craftbeerpi3/releases/tag/3.0) installations. It is our belief that CraftBeerPi 3.0 is the best, most stable release of the app to date.
+Currently, Swill SDK only supports [CraftBeerPi3 v3.0](https://github.com/Manuel83/craftbeerpi3/releases/tag/3.0) installations. It is our belief that CraftBeerPi 3.0 is the best, most stable release of the app to date.
 
 ### Why?
 
