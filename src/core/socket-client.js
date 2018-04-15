@@ -5,17 +5,9 @@ const io = require('socket.io-client'),
   SOCKET_ADDRESS = global.SDK_CONFIG.socketAddress || 'http://localhost:5000',
   // Initialize the socket.io-client. '/brew' is the endpoint the CBPi socket.io server listens on.
   socket = io(SOCKET_ADDRESS + '/brew'),
-  onevent = socket.onevent,
   // These are all of the events that CraftBeerPi3 admits.
   events = ['connect', 'disconnect', "SWITCH_ACTOR", "SENSOR_UPDATE", "UPDATE_KETTLE", "UPDATE_ALL_STEPS", "NOTIFY", "UPDATE_KETTLE_TARGET_TEMP", "UPDATE_FERMENTER_TARGET_TEMP", "UPDATE_FERMENTER_BREWNAME", "UPDATE_FERMENTER", "UPDATE_CONFIG", "MESSAGE"],
   listeners = {};
-
-// Middleware for the socket so that we can debug problems.
-socket.onevent = packet => {
-  // eslint-disable-next-line no-console
-  //console.dir(packet);
-  onevent.call(this, packet);
-};
 
 // Register a function to handle each known socket event. When a known event occurs,
 // call any listeners that may have registered themselves to receive that event.
