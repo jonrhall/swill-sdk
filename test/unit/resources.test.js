@@ -1,6 +1,7 @@
 /* global reRequire, mockSocketIO, expect */
 
 describe('Resources', () => {
+  const resources = [ 'actors', 'kettles', 'fermenters', 'sensors', 'steps', 'config' ];
   let resourcesModule;
 
   beforeEach(() => {
@@ -8,13 +9,13 @@ describe('Resources', () => {
     resourcesModule = reRequire('../../src/core/resources');
   });
 
-  [ 'actors', 'kettles', 'fermenters', 'sensors', 'steps' ].forEach(resource => {
+  resources.forEach(resource => {
     it(`exports the ${resource} object`, () => {
       expect(resourcesModule[resource]).to.be.an('object');
     });
   });
 
   it('doesn\'t leak any other objects', () => {
-    expect(Object.keys(resourcesModule).length).to.equal(5);
+    expect(Object.keys(resourcesModule).length).to.equal(resources.length);
   });
 });

@@ -31,7 +31,7 @@ module.exports = function generateResource(name, socketEvents = [], pluralIndex 
 
   // Get the list of resources.
   async function getResources(){
-    let resources = await httpClient.get('/system/dump');
+    let resources = await httpClient.getSystemDump();
 
     // Assign the resources list to the cache in such a way that we can hold onto the reference,
     // which allows one instance of the resources updating to modify another's. Another unfortunate
@@ -56,7 +56,7 @@ module.exports = function generateResource(name, socketEvents = [], pluralIndex 
       },
       typeIndex = specialCases[baseName] || `${baseName}_types`;
 
-    return toArray((await httpClient.get('/system/dump'))[typeIndex]);
+    return toArray((await httpClient.getSystemDump())[typeIndex]);
   }
 
   // This set state function operates on a resource object in-memory, but it also supports using it in an

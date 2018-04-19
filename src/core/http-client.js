@@ -14,6 +14,7 @@ let cache = {};
 module.exports = {
   // Prepend the CraftBeerPi server route to the specified API route
   get: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options),
+  getSystemDump: async () => await makeRequest(`${HTTP_ADDRESS}/api/system/dump`, 'GET', options),
   post: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'POST', options),
   put: async (route, data) => {
     return await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'PUT', Object.assign({
