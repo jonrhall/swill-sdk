@@ -30,74 +30,6 @@ CraftBeerPi3's API is complex and hard to manage on its own. This project aims t
 
 Anyone who loves CraftBeerPi3 already and wants to develop an app that controls or listens to CraftBeerPi3 in some custom way. That could be as simple as Node app to create brewing notifications, or as complex as an entirely new custom interface that you create for your own CraftBeerPi3 installation.
 
-## Usage
-
-Swill SDK can be used as both a Node module and a client-side library. When `npm install` is run, the client sdk is automatically bundled into `lib/swill-sdk.min.js`.
-
-Keep in mind, you will always need a running CraftBeerPi3 instance for Swill SDK to talk to.
-
-### Client-side
-
-All that is needed to use Swill SDK in the browser is to include it in a script tag in your app:
-```html
-<script src="swill-sdk.min.js"></script>
-```
-The SDK itself will be available on the on global scope via `window.SwillSDK`.
-
-### Node.js
-
-Install the sdk as a dependency of your node project:
-```shell
- npm i -D https://github.com/jonrhall/swill-sdk
-```
-
-Require it as part of your project:
-```javascript
-const SwillSDK = require('swill-sdk');
-
-... do something
-```
-
-## Example SDK client
-
-```javascript
-// Import the library
-const SwillSDK = require('swill-sdk');
-
-// Instantiate SDK
-const sdk = SwillSDK();
-
-// Do basic things, like listen for events you think you'd like to do something with.
-sdk.resources.sensors.onUpdate((event, data) =>
-    console.log('A sensor update occurred! ${event}, ${data}'));
-
-// Control specific resources, like actors, and get their configuration.
-// Get the actors available:
-const actors = await sdk.resources.actors.getActors();
-
-// Perform more advanced tasks, like setting a kettle's target temperature.
-// Get the kettles list, and set the target temperature to 132. Assume old temp is 100.
-const kettles = await sdk.resources.kettles.getKettles(),
-  promise = kettles[0].setState({target_temp: 132});
-// Before the promise resolves, the temperature will not be updated
-console.log(kettles[0].target_temp) // 100
-console.log(await promise) // {agitator: "", automatic: null, config: {…}, target_temp: "132", id: 1, …} (the updated sensor object itself)
-console.log(kettles[0].target_temp) // 132
-```
-
-## Configuration
-
-By default, Swill SDK assumes your CraftBeerPi3 HTTP and websocket servers are both located at `http://localhost:5000`. This is normally fine if you haven't configured custom ports and routing for your CBPi instance.
-
-If you are running the your code on another machine, host or port entirely, you will need to tell the SDK where to look for CraftBeerPi. Those overrides are provided in the form of a configuration object you pass to Swill SDK when you instantiate:
-```javascript
-const SwillSDK = require('swill-sdk');
-const sdk = SwillSDK({
-  httpAddress: 'http://<some-ip>:<some-port>',
-  socketAddress: 'http://<some-ip>:<some-port>'
-});
-```
-
 ## CraftBeerPi3 compatibility
 
 Currently, Swill SDK only supports [CraftBeerPi3 v3.0](https://github.com/Manuel83/craftbeerpi3/releases/tag/3.0) installations. It is our belief that CraftBeerPi 3.0 is the best, most stable release of the app to date.
@@ -110,78 +42,10 @@ CBPi v2.x and earlier are old releases and should be seen as deprecated in favor
 
 ## Try it out!
 
-Just want to try out the SDK, without the fuss of creating a separate Node package or UI project? You can!
+Just want to try out the SDK, without the fuss of creating a separate package or project? You can!
 
-Make sure you've got a CraftBeerPi3 instance running locally, then run the development server (if you want to test the client-side library) or the Node sample (if you want to test the Node.js module).
+Make sure you've got a CraftBeerPi3 instance running locally, then [run the Node sample](../../wiki/Usage#nodejs).
 
-### Development server
+## Learn More
 
-Inside of the install location for Swill SDK, if you run the command `npm run dev:server` you will spawn a continuously running development server. Open your browser to `http://<ip-address>:8080/index.html` and open the browser's development console. Here is a sample set of commands you can run:
-```javascript
-> const sdk = SwillSDK({socketAddress:`http://${window.location.hostname}:5000`,httpAddress:`http://${window.location.hostname}:5000`});
-> undefined
-> await sdk.resources.actors.getActors();
-> // See what happens next :)
-```
-
-### Node sample
-
-Inside the install location, run `node` and then follow these commands:
-```javascript
-> const SwillSDK = require('./');
-undefined
-> const sdk = SwillSDK();
-undefined
-> (async () => {console.log(await sdk.resources.actors.getActors())})()
-> // See what happens next :)
-```
-
-## Deploying your app with Swill SDK
-
-_If you use Swill SDK as a Node app, you can ignore this section._
-
-If you plan on making your app available in a web browser, you'll either need to host/deploy it to your own personal server, or use your Raspberry Pi and CraftBeerPi to do it for you. Keep in mind that if you go deploy it yourself, you will need to [install CORS for CraftBeerPi](#cors) in order for any web clients to accept responses from the CBPi server in the first place.
-
-It is generally recommended that you run your code bundled with the SDK, copied into the same folder that CraftBeerPi3 hosts its resources from (normally something like `/path/to/craftbeerpi3/modules/ui/static`). Files dropped into that location are available from the same host and port URL that you access CraftBeerPi3 from, by default `http://<raspi-address:5000/ui/static`.
-
-## Gotchas
-
-### CORS
-
-If you are using the client-side SDK and you are not running your resources on the same host and port as CraftBeerPi3 (generally by dropping your files directly in the `craftbeerpi3/modules/ui/static/` folder), you will run into CORS (Cross-Origin Resource Sharing) request issues with the CraftBeerPi3 server.
-
-For example, this will happen when you attempt to run the [development server](#development-server).
-
-By default, CraftBeerPi3 does not support requests from origins other than its own. This can be remedied a few ways. Either move your files to the folder mentioned above so that they run on the same host and port as CBPi, or do the following to enable CORS support in CraftBeerPi3.
-
-#### Installing Flask-CORS
-1. From inside your CraftBeerPi3 directory (normally something like `~/craftbeerpi3/`), install [Flask-CORS](http://flask-cors.readthedocs.io/en/latest/)
-```shell
- pip install -U flask-cors
-```
-2. Edit your `modules/__init__.py` file and add the following
-```python
-import json
-import pprint
-import sys, os
-from flask import Flask, render_template, redirect
-from flask_socketio import SocketIO, emit
-from flask_cors import CORS # ADD THIS
-
-...
-
-from modules.core.db import get_db
-
-CORS(app) # AND ALSO ADD THIS
-
-@app.route('/')
-def index():
-    return redirect('ui')
-
-...
-```
-3. Restart your CBPi instance:
-```shell
-sudo /etc/init.d/craftbeerpiboot stop && sudo /etc/init.d/craftbeerpiboot start
-```
-4. CORS should now be supported, connect your clients
+Want to learn more? [Visit the wiki for more information!](../../wiki)

@@ -1,9 +1,37 @@
 const generateResource = require('./resource-interface'),
-  actors = generateResource('actors', [ 'SWITCH_ACTOR' ]),
-  kettles = generateResource('kettles', [ 'UPDATE_KETTLE', 'UPDATE_KETTLE_TARGET_TEMP' ], false),
-  fermenters = generateResource('fermenters', ['UPDATE_FERMENTER_TARGET_TEMP', 'UPDATE_FERMENTER_BREWNAME', 'UPDATE_FERMENTER'], false),
-  sensors = generateResource('sensors', [ 'SENSOR_UPDATE' ]),
-  steps = generateResource('steps', [ 'UPDATE_ALL_STEPS' ]),
-  config = require('../resources/config');
+  resources = [
+    {
+      name: 'actors',
+      events: [ 'SWITCH_ACTOR' ]
+    },
+    {
+      name: 'kettles',
+      events: [ 'UPDATE_KETTLE', 'UPDATE_KETTLE_TARGET_TEMP' ],
+      notPlural: true
+    },
+    {
+      name: 'fermenters',
+      events: ['UPDATE_FERMENTER_TARGET_TEMP', 'UPDATE_FERMENTER_BREWNAME', 'UPDATE_FERMENTER'],
+      notPlural: true
+    },
+    {
+      name: 'sensors',
+      events: [ 'SENSOR_UPDATE' ]
+    },
+    {
+      name: 'steps',
+      events: [ 'UPDATE_ALL_STEPS' ]
+    }
+  ];
 
-module.exports = { actors, kettles, fermenters, sensors, steps, config };
+// Generate a resource object for each resource config
+resources.forEach(resource =>
+  module.exports[resource.name] = generateResource(
+    resource.name,
+    resource.events,
+    resource.notPlural
+  )
+);
+
+// Also export the config resource, which is a special case
+module.exports.config = require('../resources/config');

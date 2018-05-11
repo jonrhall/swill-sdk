@@ -32,6 +32,13 @@ async function makeRequest(route, method, options){
   let cachedResponse,
     response;
 
+  // POST and PUT methods invalidate the cache because they could mutate server data
+  // that causes race conditions like how getSystemDump() would return stale data before
+  // the current HTTP_INTERVAL expires.
+  if(method === 'POST' || method === 'PUT'){
+    cache = {};
+  }
+
   // For now, only retrieve GET responses from the cache
   if(method === 'GET'){
     cachedResponse = getCachedResponse(route, method);
