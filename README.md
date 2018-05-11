@@ -46,52 +46,6 @@ Just want to try out the SDK, without the fuss of creating a separate package or
 
 Make sure you've got a CraftBeerPi3 instance running locally, then [run the Node sample](../../wiki/Usage#nodejs).
 
-## Deploying your app with Swill SDK
+## Learn More
 
-_If you use Swill SDK as a Node app, you can ignore this section._
-
-If you plan on making your app available in a web browser, you'll either need to host/deploy it to your own personal server, or use your Raspberry Pi and CraftBeerPi to do it for you. Keep in mind that if you go deploy it yourself, you will need to [install CORS for CraftBeerPi](#cors) in order for any web clients to accept responses from the CBPi server in the first place.
-
-It is generally recommended that you run your code bundled with the SDK, copied into the same folder that CraftBeerPi3 hosts its resources from (normally something like `/path/to/craftbeerpi3/modules/ui/static`). Files dropped into that location are available from the same host and port URL that you access CraftBeerPi3 from, by default `http://<raspi-address:5000/ui/static`.
-
-## Gotchas
-
-### CORS
-
-If you are using the client-side SDK and you are not running your resources on the same host and port as CraftBeerPi3 (generally by dropping your files directly in the `craftbeerpi3/modules/ui/static/` folder), you will run into CORS (Cross-Origin Resource Sharing) request issues with the CraftBeerPi3 server.
-
-For example, this will happen when you attempt to run the [development server](#development-server).
-
-By default, CraftBeerPi3 does not support requests from origins other than its own. This can be remedied a few ways. Either move your files to the folder mentioned above so that they run on the same host and port as CBPi, or do the following to enable CORS support in CraftBeerPi3.
-
-#### Installing Flask-CORS
-1. From inside your CraftBeerPi3 directory (normally something like `~/craftbeerpi3/`), install [Flask-CORS](http://flask-cors.readthedocs.io/en/latest/)
-```shell
- pip install -U flask-cors
-```
-2. Edit your `modules/__init__.py` file and add the following
-```python
-import json
-import pprint
-import sys, os
-from flask import Flask, render_template, redirect
-from flask_socketio import SocketIO, emit
-from flask_cors import CORS # ADD THIS
-
-...
-
-from modules.core.db import get_db
-
-CORS(app) # AND ALSO ADD THIS
-
-@app.route('/')
-def index():
-    return redirect('ui')
-
-...
-```
-3. Restart your CBPi instance:
-```shell
-sudo /etc/init.d/craftbeerpiboot stop && sudo /etc/init.d/craftbeerpiboot start
-```
-4. CORS should now be supported, connect your clients
+Want to learn more? [Visit the wiki for more information!](../../wiki)
