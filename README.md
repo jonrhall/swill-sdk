@@ -30,74 +30,6 @@ CraftBeerPi3's API is complex and hard to manage on its own. This project aims t
 
 Anyone who loves CraftBeerPi3 already and wants to develop an app that controls or listens to CraftBeerPi3 in some custom way. That could be as simple as Node app to create brewing notifications, or as complex as an entirely new custom interface that you create for your own CraftBeerPi3 installation.
 
-## Usage
-
-Swill SDK can be used as both a Node module and a client-side library. When `npm install` is run, the client sdk is automatically bundled into `lib/swill-sdk.min.js`.
-
-Keep in mind, you will always need a running CraftBeerPi3 instance for Swill SDK to talk to.
-
-### Client-side
-
-All that is needed to use Swill SDK in the browser is to include it in a script tag in your app:
-```html
-<script src="swill-sdk.min.js"></script>
-```
-The SDK itself will be available on the on global scope via `window.SwillSDK`.
-
-### Node.js
-
-Install the sdk as a dependency of your node project:
-```shell
- npm i -D https://github.com/jonrhall/swill-sdk
-```
-
-Require it as part of your project:
-```javascript
-const SwillSDK = require('swill-sdk');
-
-... do something
-```
-
-## Example SDK client
-
-```javascript
-// Import the library
-const SwillSDK = require('swill-sdk');
-
-// Instantiate SDK
-const sdk = SwillSDK();
-
-// Do basic things, like listen for events you think you'd like to do something with.
-sdk.resources.sensors.onUpdate((event, data) =>
-    console.log('A sensor update occurred! ${event}, ${data}'));
-
-// Control specific resources, like actors, and get their configuration.
-// Get the actors available:
-const actors = await sdk.resources.actors.getActors();
-
-// Perform more advanced tasks, like setting a kettle's target temperature.
-// Get the kettles list, and set the target temperature to 132. Assume old temp is 100.
-const kettles = await sdk.resources.kettles.getKettles(),
-  promise = kettles[0].setState({target_temp: 132});
-// Before the promise resolves, the temperature will not be updated
-console.log(kettles[0].target_temp) // 100
-console.log(await promise) // {agitator: "", automatic: null, config: {…}, target_temp: "132", id: 1, …} (the updated sensor object itself)
-console.log(kettles[0].target_temp) // 132
-```
-
-## Configuration
-
-By default, Swill SDK assumes your CraftBeerPi3 HTTP and websocket servers are both located at `http://localhost:5000`. This is normally fine if you haven't configured custom ports and routing for your CBPi instance.
-
-If you are running the your code on another machine, host or port entirely, you will need to tell the SDK where to look for CraftBeerPi. Those overrides are provided in the form of a configuration object you pass to Swill SDK when you instantiate:
-```javascript
-const SwillSDK = require('swill-sdk');
-const sdk = SwillSDK({
-  httpAddress: 'http://<some-ip>:<some-port>',
-  socketAddress: 'http://<some-ip>:<some-port>'
-});
-```
-
 ## CraftBeerPi3 compatibility
 
 Currently, Swill SDK only supports [CraftBeerPi3 v3.0](https://github.com/Manuel83/craftbeerpi3/releases/tag/3.0) installations. It is our belief that CraftBeerPi 3.0 is the best, most stable release of the app to date.
@@ -110,31 +42,9 @@ CBPi v2.x and earlier are old releases and should be seen as deprecated in favor
 
 ## Try it out!
 
-Just want to try out the SDK, without the fuss of creating a separate Node package or UI project? You can!
+Just want to try out the SDK, without the fuss of creating a separate package or project? You can!
 
-Make sure you've got a CraftBeerPi3 instance running locally, then run the development server (if you want to test the client-side library) or the Node sample (if you want to test the Node.js module).
-
-### Development server
-
-Inside of the install location for Swill SDK, if you run the command `npm run dev:server` you will spawn a continuously running development server. Open your browser to `http://<ip-address>:8080/index.html` and open the browser's development console. Here is a sample set of commands you can run:
-```javascript
-> const sdk = SwillSDK({socketAddress:`http://${window.location.hostname}:5000`,httpAddress:`http://${window.location.hostname}:5000`});
-> undefined
-> await sdk.resources.actors.getActors();
-> // See what happens next :)
-```
-
-### Node sample
-
-Inside the install location, run `node` and then follow these commands:
-```javascript
-> const SwillSDK = require('./');
-undefined
-> const sdk = SwillSDK();
-undefined
-> (async () => {console.log(await sdk.resources.actors.getActors())})()
-> // See what happens next :)
-```
+Make sure you've got a CraftBeerPi3 instance running locally, then [run the Node sample](../../wiki/Usage#nodejs).
 
 ## Deploying your app with Swill SDK
 
