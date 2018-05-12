@@ -25,8 +25,20 @@ module.exports = function generateResource(name, socketEvents = [], pluralIndex 
     [getResourcesName]: getResources,
     // Get all the types of the resource,
     [getTypesName]: getTypes,
-    // Register listeners for updates to resources
-    onUpdate: fn => onUpdateFns.push(fn)
+    // Register a listener for updates to resources.
+    onUpdate: fn1 => {
+      onUpdateFns.push(fn1);
+
+      // Return a function that allows the caller to unsubscribe from listening.
+      return () => {
+        onUpdateFns.some((fn2,i) => {
+          if(fn1 === fn2){
+            onUpdateFns.splice(i,1);
+            return true;
+          }
+        });
+      };
+    }
   };
 
   // Get the list of resources.

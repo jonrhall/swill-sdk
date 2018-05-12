@@ -4,13 +4,13 @@
 // properly set certain properties on certain resources. This allows CraftBeerPi
 // to be a modular dependency of Swill SDK and allows Swill to be opinionated
 // about the interface clients use to talk to a CBPi-like server.
-module.exports = function override(httpInterface){
-  const httpPut = httpInterface.put;
+module.exports = function overrides(sdk){
+  const httpPut = sdk.httpClient.put;
 
-  httpInterface.put = async (route, data) => {
+  sdk.httpClient.put = async (route, data) => {
     // This isn't a particularly clean solution, but what saves it is the fact that the system dump
     // is cached. It's also the only practical way of getting an up to date system representation.
-    const systemDump = await httpInterface.getSystemDump();
+    const systemDump = await sdk.httpClient.getSystemDump();
 
     // Actor routes
     if(/^\/actor\/\d+$/.test(route)){
@@ -21,7 +21,7 @@ module.exports = function override(httpInterface){
       if(actor.state !== data.state){
         // Only toggle the power if the new setting is valid
         if(data.state === 0 || data.state === 1){
-          resourceFns.push(httpInterface.post.bind(null, `${route}/toggle`));
+          resourceFns.push(sdk.httpClient.post.bind(null, `${route}/toggle`));
           actor.state = data.state;
         } else {
           throw new Error('Invalid actor state setting');
@@ -30,7 +30,7 @@ module.exports = function override(httpInterface){
 
       // If the power settings aren't the same, set the power capacity
       if(actor.power !== data.power){
-        resourceFns.push(httpInterface.post.bind(null, `${route}/power/${data.power}`));
+        resourceFns.push(sdk.httpClient.post.bind(null, `${route}/power/${data.power}`));
         actor.power = data.power;
       }
 
@@ -43,11 +43,11 @@ module.exports = function override(httpInterface){
       // Only after the potential PUT operation should the custom routes be run
       resourceFns.forEach(async fn => await fn());
 
-      return (await httpInterface.getSystemDump()).actors[actor.id];
+      return (await sdk.httpClient.getSystemDump()).actors[actor.id];
     }
 
     return await httpPut(route,data);
   };
 
-  return httpInterface;
+  return sdk;
 };
