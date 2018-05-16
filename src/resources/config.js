@@ -9,7 +9,6 @@ socketClient.on('UPDATE_CONFIG', data => onUpdateFns.forEach(fn => fn('UPDATE_CO
 
 module.exports = {
   getConfig,
-  setConfig,
   onUpdate: fn => onUpdateFns.push(fn)
 };
 
@@ -18,18 +17,18 @@ async function getConfig(){
   const config =  (await httpClient.getSystemDump()).config;
 
   Object.values(config).forEach(parameter =>
-    parameter.setConfig = setConfig.bind(null, parameter));
+    parameter.setValue = setValue.bind(null, parameter));
 
   return config;
 }
 
 // Set the value for a given parameter within the config object
-async function setConfig(parameter, newSettings){
+async function setValue(parameter, value){
   // Merge the new settings with the parameter object itself into a new copy
-  const paramCopy = Object.assign({}, parameter, newSettings);
+  const paramCopy = Object.assign({}, parameter, {value});
 
   // Delete the custom function that exists on the parameter copy
-  delete paramCopy.setConfig;
+  delete paramCopy.setValue;
 
   const updatedParam = await httpClient.put(`/config/${paramCopy.name}`, paramCopy);
 

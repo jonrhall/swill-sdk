@@ -5,6 +5,12 @@
 // to be a modular dependency of Swill SDK and allows Swill to be opinionated
 // about the interface clients use to talk to a CBPi-like server.
 module.exports = function overrides(sdk){
+  actorOverrides(sdk);
+
+  return sdk;
+};
+
+function actorOverrides(sdk){
   const httpPut = sdk.httpClient.put;
 
   sdk.httpClient.put = async (route, data) => {
@@ -49,5 +55,8 @@ module.exports = function overrides(sdk){
     return await httpPut(route,data);
   };
 
-  return sdk;
-};
+  // Add a toggle timer action for the Actor resource, to support the route CPBi provides
+  sdk.resources.actors.setTimer = async (actor, secs) => {
+    return await sdk.httpClient.post(`/actor/${actor.id}/toggle/${secs}`);
+  };
+}
