@@ -1,7 +1,7 @@
 'use strict';
 
-const httpClient = require('../core/http-client'),
-  socketClient = require('../core/socket-client'),
+const httpClient = require('./http-client'),
+  socketClient = require('./socket-client'),
   onUpdateFns = [];
 
 // Register the config resource to listen for any updates from the websocket connection

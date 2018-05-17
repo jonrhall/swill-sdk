@@ -8,6 +8,7 @@ module.exports = function generateResource(name, socketEvents = [], pluralIndex 
   const getResourcesName = `get${capitalize(name)}`,
     baseName = name.slice(0, name.length-1),
     getTypesName = `get${capitalize(baseName)}Types`,
+    createResourceName = `create${capitalize(baseName)}`,
     sysDumpIndex = pluralIndex ? name : baseName,
     onUpdateFns = [],
     cachedData = {};
@@ -25,6 +26,8 @@ module.exports = function generateResource(name, socketEvents = [], pluralIndex 
     [getResourcesName]: getResources,
     // Get all the types of the resource,
     [getTypesName]: getTypes,
+    // Create a resource
+    [createResourceName]: createResource,
     // Register a listener for updates to resources.
     onUpdate: fn1 => {
       onUpdateFns.push(fn1);
@@ -71,6 +74,14 @@ module.exports = function generateResource(name, socketEvents = [], pluralIndex 
     return toArray((await httpClient.getSystemDump())[typeIndex]);
   }
 
+  async function createResource(resource){
+    const newResource = await httpClient.post(`/${baseName}/`, resource);
+
+    broadcastUpdate(newResource);
+
+    return newResource;
+  }
+
   // This set state function operates on a resource object in-memory, but it also supports using it in an
   // asyncronous matter, resolving to the updated resource object as an output once it is returned from the server.
   async function setState(resource, newSettings){
@@ -79,12 +90,16 @@ module.exports = function generateResource(name, socketEvents = [], pluralIndex 
     // Re-assign the resource object in-memory to make sure we're consistent with the server's model.
     Object.assign(resource, updatedResource);
 
-    // CraftBeerPi can be inconsistent in when it updates its resources via websocket and when it
-    // updates its resources only via HTTP response. This function makes it so that a user can rely
-    // on the 'onUpdate' function to truly give them all the resource object updates they need.
-    onUpdateFns.forEach(fn => fn(`UPDATE_${baseName.toUpperCase()}`, resource));
+    broadcastUpdate(resource);
 
     return resource;
+  }
+
+  // CraftBeerPi can be inconsistent in when it updates its resources via websocket and when it
+  // updates its resources only via HTTP response. This function makes it so that a user can rely
+  // on the 'onUpdate' function to truly give them all the resource object updates they need.
+  function broadcastUpdate(resource){
+    onUpdateFns.forEach(fn => fn(`UPDATE_${baseName.toUpperCase()}`, resource));
   }
 };
 

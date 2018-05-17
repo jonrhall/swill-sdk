@@ -1,8 +1,8 @@
 'use strict';
 
 const fetch = require('node-fetch'),
-  HTTP_INTERVAL = global.SDK_CONFIG.httpInterval || 5000,
-  HTTP_ADDRESS = global.SDK_CONFIG.httpAddress || 'http://localhost:5000',
+  HTTP_INTERVAL = global.SWILL_SDK_CONFIG.httpInterval || 5000,
+  HTTP_ADDRESS = global.SWILL_SDK_CONFIG.httpAddress || 'http://localhost:5000',
   options = {
     mode: 'cors',
     headers: { 'Access-Control-Allow-Origin': '*' }
@@ -15,7 +15,13 @@ module.exports = {
   // Prepend the CraftBeerPi server route to the specified API route
   get: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options),
   getSystemDump: async () => await makeRequest(`${HTTP_ADDRESS}/api/system/dump`, 'GET', options),
-  post: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'POST', options),
+  post: async (route, data) => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'POST', Object.assign({}, options, {
+    body: JSON.stringify(data),
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })),
   put: async (route, data) => {
     return await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'PUT', Object.assign({
       body: JSON.stringify(data),

@@ -2,7 +2,7 @@
 
 const io = require('socket.io-client'),
   // The default assumes the socket-client exists on the same IP address as CraftBeerPi.
-  SOCKET_ADDRESS = global.SDK_CONFIG.socketAddress || 'http://localhost:5000',
+  SOCKET_ADDRESS = global.SWILL_SDK_CONFIG.socketAddress || 'http://localhost:5000',
   // Initialize the socket.io-client. '/brew' is the endpoint the CBPi socket.io server listens on.
   socket = io(SOCKET_ADDRESS + '/brew'),
   // These are all of the events that CraftBeerPi3 admits.
