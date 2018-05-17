@@ -30,7 +30,8 @@ module.exports = {
         'Content-Type': 'application/json;charset=UTF-8'
       }
     }));
-  }
+  },
+  delete: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'DELETE', options)
 };
 
 // Make an API request to CraftBeerPi

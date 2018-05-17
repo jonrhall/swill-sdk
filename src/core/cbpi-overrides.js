@@ -54,9 +54,4 @@ function actorOverrides(sdk){
 
     return await httpPut(route,data);
   };
-
-  // Add a toggle timer action for the Actor resource, to support the route CPBi provides
-  sdk.resources.actors.setTimer = async (actor, secs) => {
-    return await sdk.httpClient.post(`/actor/${actor.id}/toggle/${secs}`);
-  };
 }
