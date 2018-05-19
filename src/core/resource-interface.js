@@ -7,7 +7,7 @@ const socketClient = require('./socket-client'),
 module.exports = function generateResource(config){
   // Set some resource defaults
   config.socketEvents = config.socketEvents || [];
-  config.pluralIndex = config.pluralIndex || true;
+  config.pluralIndex = config.pluralIndex === undefined ? true : config.pluralIndex;
   config.template = config.template || {};
 
   const getResourcesName = `get${capitalize(config.name)}`,

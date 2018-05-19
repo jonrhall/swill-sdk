@@ -6,6 +6,7 @@
 // about the interface clients use to talk to a CBPi-like server.
 module.exports = function overrides(sdk){
   actorOverrides(sdk);
+  kettleOverrides(sdk);
 
   return sdk;
 };
@@ -13,7 +14,7 @@ module.exports = function overrides(sdk){
 function actorOverrides(sdk){
   const httpPut = sdk.httpClient.put;
 
-  sdk.httpClient.put = async (route, data) => {
+  sdk.httpClient.put = async function actorHttpPutOverride(route, data) {
     // This isn't a particularly clean solution, but what saves it is the fact that the system dump
     // is cached. It's also the only practical way of getting an up to date system representation.
     const systemDump = await sdk.httpClient.getSystemDump();
@@ -50,6 +51,37 @@ function actorOverrides(sdk){
       resourceFns.forEach(async fn => await fn());
 
       return (await sdk.httpClient.getSystemDump()).actors[actor.id];
+    }
+
+    return await httpPut(route,data);
+  };
+}
+
+function kettleOverrides(sdk){
+  const httpPut = sdk.httpClient.put;
+
+  sdk.httpClient.put = async function kettleHttpPutOverride(route, data) {
+    // This isn't a particularly clean solution, but what saves it is the fact that the system dump
+    // is cached. It's also the only practical way of getting an up to date system representation.
+    const systemDump = await sdk.httpClient.getSystemDump();
+
+    // Actor routes
+    if(/^\/kettle\/\d+$/.test(route)){
+      const kettle = systemDump.kettle[data.id];
+
+      // If the target temp settings aren't the same, set the target temp.
+      if(kettle.target_temp !== data.target_temp){
+        await sdk.httpClient.post(`${route}/targettemp/${data.target_temp}`);
+        kettle.target_temp = data.target_temp;
+      }
+
+      // If the objects still are different after applying the power
+      // and state changes, add a put operation.
+      if(JSON.stringify(kettle) !== JSON.stringify(data)){
+        await httpPut(route,data);
+      }
+
+      return (await sdk.httpClient.getSystemDump()).kettle[kettle.id];
     }
 
     return await httpPut(route,data);
