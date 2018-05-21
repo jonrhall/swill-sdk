@@ -7,6 +7,7 @@
 module.exports = function overrides(sdk){
   actorOverrides(sdk);
   kettleOverrides(sdk);
+  fermenterOverrides(sdk);
 
   return sdk;
 };
@@ -97,6 +98,49 @@ function kettleOverrides(sdk){
       resourceFns.forEach(async fn => await fn());
 
       return (await sdk.httpClient.getSystemDump()).kettle[kettle.id];
+    }
+
+    return await httpPut(route,data);
+  };
+}
+
+function fermenterOverrides(sdk){
+  const httpPut = sdk.httpClient.put;
+
+  sdk.httpClient.put = async function fermenterHttpPutOverride(route, data){
+    let resourceFns = [];
+
+    // Fermenter routes
+    if(/^\/fermenter\/\d+$/.test(route)){
+      const fermenter = (await sdk.httpClient.getSystemDump()).fermenter[data.id];
+
+      // If the state (on/off) settings aren't the same, toggle the state
+      if(fermenter.state !== data.state){
+        // Only toggle the power if the new setting is valid
+        if(data.state === true || data.state === false){
+          resourceFns.push(sdk.httpClient.post.bind(null, `${route}/automatic`));
+          fermenter.state = data.state;
+        } else {
+          throw new Error('Invalid fermenter state setting');
+        }
+      }
+
+      // If the target temp settings aren't the same, set the target temp.
+      if(fermenter.target_temp !== data.target_temp){
+        resourceFns.push(sdk.httpClient.post.bind(null, `${route}/targettemp/${data.target_temp}`));
+        fermenter.target_temp = data.target_temp;
+      }
+
+      // If the objects still are different after applying the power
+      // and state changes, add a put operation.
+      if(JSON.stringify(fermenter) !== JSON.stringify(data)){
+        await httpPut(route,data);
+      }
+
+      // Only after the potential PUT operation should the custom routes be run
+      resourceFns.forEach(async fn => await fn());
+
+      return (await sdk.httpClient.getSystemDump()).fermenter[fermenter.id];
     }
 
     return await httpPut(route,data);
