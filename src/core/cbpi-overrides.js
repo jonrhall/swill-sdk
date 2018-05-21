@@ -64,14 +64,26 @@ function kettleOverrides(sdk){
     // This isn't a particularly clean solution, but what saves it is the fact that the system dump
     // is cached. It's also the only practical way of getting an up to date system representation.
     const systemDump = await sdk.httpClient.getSystemDump();
+    let resourceFns = [];
 
-    // Actor routes
+    // Kettle routes
     if(/^\/kettle\/\d+$/.test(route)){
       const kettle = systemDump.kettle[data.id];
 
+      // If the state (on/off) settings aren't the same, toggle the state
+      if(kettle.state !== data.state){
+        // Only toggle the power if the new setting is valid
+        if(data.state === true || data.state === false){
+          resourceFns.push(sdk.httpClient.post.bind(null, `${route}/automatic`));
+          kettle.state = data.state;
+        } else {
+          throw new Error('Invalid kettle state setting');
+        }
+      }
+
       // If the target temp settings aren't the same, set the target temp.
       if(kettle.target_temp !== data.target_temp){
-        await sdk.httpClient.post(`${route}/targettemp/${data.target_temp}`);
+        resourceFns.push(sdk.httpClient.post.bind(null, `${route}/targettemp/${data.target_temp}`));
         kettle.target_temp = data.target_temp;
       }
 
@@ -80,6 +92,9 @@ function kettleOverrides(sdk){
       if(JSON.stringify(kettle) !== JSON.stringify(data)){
         await httpPut(route,data);
       }
+
+      // Only after the potential PUT operation should the custom routes be run
+      resourceFns.forEach(async fn => await fn());
 
       return (await sdk.httpClient.getSystemDump()).kettle[kettle.id];
     }
