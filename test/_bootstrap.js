@@ -3,7 +3,11 @@ global.mock = require('mock-require');
 global.reRequire = global.mock.reRequire;
 
 // Mock an empty SDK config object
-global.SWILL_SDK_CONFIG = {};
+global.SWILL_SDK_CONFIG = {
+  server: 'http://localhost',
+  port: 5000,
+  cacheInterval: 5000
+};
 
 // Pre-load expectation library, every test will need it
 global.expect = require('expect.js');
