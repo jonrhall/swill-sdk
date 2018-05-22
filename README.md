@@ -2,10 +2,6 @@
 
 ## Installation
 
-_Prerequisites_:
-- Node.js 8.11+
-- npm 5.6+
-
 1. Clone this repository
 ```shell
  git clone https://github.com/jonrhall/swill-sdk
@@ -23,7 +19,7 @@ A software development kit (SDK) for users who want to develop their own apps fo
 
 ### Why is this needed?
 
-CraftBeerPi3's API is complex and hard to manage on its own. This project aims to lower the barrier to entry for developers who want more control out of their existing CBPi instance beyond what it currently offers.
+CraftBeerPi3's API is complex and hard to manage on its own, and it's also not being updated frequently. This project aims to lower the barrier to entry for developers who want more control out of their existing CBPi instance beyond what it currently offers.
 
 
 ### Who would use it?
