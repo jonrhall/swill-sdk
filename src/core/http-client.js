@@ -1,8 +1,8 @@
 'use strict';
 
 const fetch = require('node-fetch'),
-  HTTP_INTERVAL = global.SWILL_SDK_CONFIG.httpInterval || 5000,
-  HTTP_ADDRESS = global.SWILL_SDK_CONFIG.httpAddress || 'http://localhost:5000',
+  HTTP_INTERVAL = global.SWILL_SDK_CONFIG.cacheInterval,
+  HTTP_ADDRESS = `${global.SWILL_SDK_CONFIG.server}:${global.SWILL_SDK_CONFIG.port}`,
   options = {
     mode: 'cors',
     headers: { 'Access-Control-Allow-Origin': '*' }
