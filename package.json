@@ -9,7 +9,6 @@
     "build": "webpack --progress --colors",
     "build:watch": "webpack --env dev --progress --colors --watch",
     "dev:server": "webpack-dev-server --env dev",
-    "postinstall": "npm run test && npm run build",
     "test": "nyc mocha --require ./test/_bootstrap.js ./test/**/*.test.js",
     "test:watch": "mocha --require ./test/_bootstrap.js ./test/**/*.test.js -w",
     "clean": "rm -rf coverage/ && rm -rf .nyc_output && rm -rf node_modules/ && rm -rf lib/"
