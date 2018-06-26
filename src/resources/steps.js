@@ -1,14 +1,13 @@
-'use strict';
-
 const stepInterface = require('../core/resource-interface')({
-    name: 'steps',
-    socketEvents: ['UPDATE_ALL_STEPS'],
-    template: {
-      name: 'NewMashStep',
-      type: ''
-    }
-  }),
-  httpClient = require('../core/http-client');
+  name: 'steps',
+  socketEvents: ['UPDATE_ALL_STEPS'],
+  template: {
+    name: 'NewMashStep',
+    type: ''
+  }
+});
+
+const httpClient = require('../core/http-client');
 
 // Clear all steps from CraftBeerPi
 stepInterface.clearSteps = async () => {

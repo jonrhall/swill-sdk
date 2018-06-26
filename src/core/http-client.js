@@ -1,38 +1,17 @@
 'use strict';
 
-const fetch = require('node-fetch'),
-  HTTP_INTERVAL = global.SWILL_SDK_CONFIG.cacheInterval,
-  HTTP_ADDRESS = `${global.SWILL_SDK_CONFIG.server}:${global.SWILL_SDK_CONFIG.port}`,
-  options = {
-    mode: 'cors',
-    headers: { 'Access-Control-Allow-Origin': '*' }
-  };
+const fetch = require('node-fetch');
+
+const HTTP_INTERVAL = global.SWILL_SDK_CONFIG.cacheInterval;
+const HTTP_ADDRESS = `${global.SWILL_SDK_CONFIG.server}:${global.SWILL_SDK_CONFIG.port}`;
+
+const options = {
+  mode: 'cors',
+  headers: { 'Access-Control-Allow-Origin': '*' }
+};
 
 // Initialize an empty cache
 let cache = {};
-
-module.exports = {
-  // Prepend the CraftBeerPi server route to the specified API route
-  get: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options),
-  getSystemDump: async () => await makeRequest(`${HTTP_ADDRESS}/api/system/dump`, 'GET', options),
-  post: async (route, data) => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'POST', Object.assign({}, options, {
-    body: JSON.stringify(data),
-    headers: {
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
-  })),
-  put: async (route, data) => {
-    return await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'PUT', Object.assign({
-      body: JSON.stringify(data),
-      headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json;charset=UTF-8'
-      }
-    }));
-  },
-  delete: async route => await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'DELETE', options)
-};
 
 // Make an API request to CraftBeerPi
 async function makeRequest(route, method, options){
@@ -101,3 +80,29 @@ function CachedResponse(data){
     method: data.method || 'GET'
   };
 }
+
+// Expose basic HTTP CRUD operations, and a special system dump command.
+module.exports = {
+  get: async route => 
+    await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options),
+  getSystemDump: async () => 
+    await makeRequest(`${HTTP_ADDRESS}/api/system/dump`, 'GET', options),
+  post: async (route, data) => 
+    await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'POST', Object.assign({}, options, {
+      body: JSON.stringify(data),
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json;charset=UTF-8'
+      }
+    })),
+  put: async (route, data) => 
+    await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'PUT', Object.assign({
+      body: JSON.stringify(data),
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json;charset=UTF-8'
+      }
+    })),
+  delete: async route => 
+    await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'DELETE', options)
+};

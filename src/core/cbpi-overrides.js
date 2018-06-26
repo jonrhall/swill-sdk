@@ -1,29 +1,19 @@
-'use strict';
-
 // CraftBeerPi requires a certain amount of overrides to its API routes to
 // properly set certain properties on certain resources. This allows CraftBeerPi
 // to be a modular dependency of Swill SDK and allows Swill to be opinionated
 // about the interface clients use to talk to a CBPi-like server.
-module.exports = function overrides(sdk){
-  actorOverrides(sdk);
-  kettleOverrides(sdk);
-  fermenterOverrides(sdk);
-
-  return sdk;
-};
 
 function actorOverrides(sdk){
   const httpPut = sdk.httpClient.put;
 
   sdk.httpClient.put = async function actorHttpPutOverride(route, data) {
-    // This isn't a particularly clean solution, but what saves it is the fact that the system dump
-    // is cached. It's also the only practical way of getting an up to date system representation.
-    const systemDump = await sdk.httpClient.getSystemDump();
-
     // Actor routes
     if(/^\/actor\/\d+$/.test(route)){
+      // This isn't a particularly clean solution, but what saves it is the fact that the system dump
+      // is cached. It's also the only practical way of getting an up to date system representation.
+      const systemDump = await sdk.httpClient.getSystemDump();
       const actor = systemDump.actors[data.id];
-      let resourceFns = [];
+      const resourceFns = [];
 
       // If the state (on/off) settings aren't the same, toggle the state
       if(actor.state !== data.state){
@@ -62,13 +52,12 @@ function kettleOverrides(sdk){
   const httpPut = sdk.httpClient.put;
 
   sdk.httpClient.put = async function kettleHttpPutOverride(route, data) {
-    // This isn't a particularly clean solution, but what saves it is the fact that the system dump
-    // is cached. It's also the only practical way of getting an up to date system representation.
-    const systemDump = await sdk.httpClient.getSystemDump();
-    let resourceFns = [];
-
     // Kettle routes
     if(/^\/kettle\/\d+$/.test(route)){
+      // This isn't a particularly clean solution, but what saves it is the fact that the system dump
+      // is cached. It's also the only practical way of getting an up to date system representation.
+      const systemDump = await sdk.httpClient.getSystemDump();
+      const resourceFns = [];
       const kettle = systemDump.kettle[data.id];
 
       // If the state (on/off) settings aren't the same, toggle the state
@@ -108,10 +97,9 @@ function fermenterOverrides(sdk){
   const httpPut = sdk.httpClient.put;
 
   sdk.httpClient.put = async function fermenterHttpPutOverride(route, data){
-    let resourceFns = [];
-
     // Fermenter routes
     if(/^\/fermenter\/\d+$/.test(route)){
+      const resourceFns = [];
       const fermenter = (await sdk.httpClient.getSystemDump()).fermenter[data.id];
 
       // If the state (on/off) settings aren't the same, toggle the state
@@ -146,3 +134,11 @@ function fermenterOverrides(sdk){
     return await httpPut(route,data);
   };
 }
+
+module.exports = function overrides(sdk){
+  actorOverrides(sdk);
+  kettleOverrides(sdk);
+  fermenterOverrides(sdk);
+
+  return sdk;
+};
