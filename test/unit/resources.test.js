@@ -1,7 +1,7 @@
 /* global reRequire, mockSocketIO, expect */
 
 describe('Resources', () => {
-  const resources = [ 'actors', 'kettles', 'fermenters', 'sensors', 'steps' ];
+  const resources = [ 'actors', 'kettles', 'fermenters', 'messages', 'sensors', 'steps' ];
   let resourcesModule;
 
   beforeEach(() => {
