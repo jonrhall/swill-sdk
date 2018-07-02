@@ -57,6 +57,7 @@ const modifyResource = (baseName, onUpdateFns) => async resource => {
 const deleteResource = (baseName, onUpdateFns) => async ({ id }) => {
   await httpClient.delete(`/${baseName}/${id}`);
   broadcastUpdate(onUpdateFns, `DELETE_${baseName.toUpperCase()}`);
+  return {id};
 };
 
 // Allow SDK clients to listen for updates to a given resource type.
