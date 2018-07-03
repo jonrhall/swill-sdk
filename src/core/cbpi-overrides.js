@@ -14,6 +14,7 @@ function actorOverrides(sdk){
       const systemDump = await sdk.httpClient.getSystemDump();
       const actor = systemDump.actors[data.id];
       const resourceFns = [];
+      let updatedActor;
 
       // If the state (on/off) settings aren't the same, toggle the state
       if(actor.state !== data.state){
@@ -35,13 +36,17 @@ function actorOverrides(sdk){
       // If the objects still are different after applying the power
       // and state changes, add a put operation.
       if(JSON.stringify(actor) !== JSON.stringify(data)){
-        await httpPut(route,data);
+        updatedActor = await httpPut(route,data);
       }
 
       // Only after the potential PUT operation should the custom routes be run
       resourceFns.forEach(async fn => await fn());
-
-      return (await sdk.httpClient.getSystemDump()).actors[actor.id];
+      
+      // The reason that the responses from the `resourceFns` calls aren't merged with `updatedActor` 
+      // is because those calls specifically return 204 No Content, the updates to the resources 
+      // to the client happen via Socket Events. It's OK if `updatedActor` is null because that 
+      // signifies to the caller that nothing has changed.  
+      return updatedActor;
     }
 
     return await httpPut(route,data);
@@ -59,6 +64,7 @@ function kettleOverrides(sdk){
       const systemDump = await sdk.httpClient.getSystemDump();
       const resourceFns = [];
       const kettle = systemDump.kettle[data.id];
+      let updatedKettle;
 
       // If the state (on/off) settings aren't the same, toggle the state
       if(kettle.state !== data.state){
@@ -80,13 +86,17 @@ function kettleOverrides(sdk){
       // If the objects still are different after applying the power
       // and state changes, add a put operation.
       if(JSON.stringify(kettle) !== JSON.stringify(data)){
-        await httpPut(route,data);
+        updatedKettle = await httpPut(route,data);
       }
 
       // Only after the potential PUT operation should the custom routes be run
       resourceFns.forEach(async fn => await fn());
 
-      return (await sdk.httpClient.getSystemDump()).kettle[kettle.id];
+      // The reason that the responses from the `resourceFns` calls aren't merged with `updatedKettle` 
+      // is because those calls specifically return 204 No Content, the updates to the resources 
+      // to the client happen via Socket Events. It's OK if `updatedKettle` is null because that 
+      // signifies to the caller that nothing has changed.
+      return updatedKettle;
     }
 
     return await httpPut(route,data);
@@ -101,6 +111,7 @@ function fermenterOverrides(sdk){
     if(/^\/fermenter\/\d+$/.test(route)){
       const resourceFns = [];
       const fermenter = (await sdk.httpClient.getSystemDump()).fermenter[data.id];
+      let updatedFermenter;
 
       // If the state (on/off) settings aren't the same, toggle the state
       if(fermenter.state !== data.state){
@@ -122,13 +133,17 @@ function fermenterOverrides(sdk){
       // If the objects still are different after applying the power
       // and state changes, add a put operation.
       if(JSON.stringify(fermenter) !== JSON.stringify(data)){
-        await httpPut(route,data);
+        updatedFermenter = await httpPut(route,data);
       }
 
       // Only after the potential PUT operation should the custom routes be run
       resourceFns.forEach(async fn => await fn());
 
-      return (await sdk.httpClient.getSystemDump()).fermenter[fermenter.id];
+      // The reason that the responses from the `resourceFns` calls aren't merged with `updatedFermenter` 
+      // is because those calls specifically return 204 No Content, the updates to the resources 
+      // to the client happen via Socket Events. It's OK if `updatedFermenter` is null because that 
+      // signifies to the caller that nothing has changed.
+      return updatedFermenter;
     }
 
     return await httpPut(route,data);

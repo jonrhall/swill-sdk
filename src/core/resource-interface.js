@@ -49,7 +49,11 @@ const modifyResource = (baseName, onUpdateFns) => async resource => {
     resource
   );
 
-  broadcastUpdate(onUpdateFns, `UPDATE_${baseName.toUpperCase()}`, updatedResource);
+  // Only update the resource if there was an update from the API call.
+  if (updatedResource) {
+    broadcastUpdate(onUpdateFns, `UPDATE_${baseName.toUpperCase()}`, updatedResource);
+  }
+
   return updatedResource;
 };
 
