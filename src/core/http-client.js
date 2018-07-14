@@ -6,7 +6,9 @@ const HTTP_ADDRESS = `${global.SWILL_SDK_CONFIG.server}:${global.SWILL_SDK_CONFI
 
 const options = {
   mode: 'cors',
-  headers: { 'Access-Control-Allow-Origin': '*' }
+  headers: {
+    'Access-Control-Allow-Origin': '*'
+  }
 };
 
 // Make an API request to CraftBeerPi
@@ -33,11 +35,11 @@ async function makeRequest(route, method, options){
 // Expose basic HTTP CRUD operations, and a special system dump command.
 module.exports = {
   get: async route => 
-    await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options),
+    makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options),
   getSystemDump: async () => 
-    await makeRequest(`${HTTP_ADDRESS}/api/system/dump`, 'GET', options),
+    makeRequest(`${HTTP_ADDRESS}/api/system/dump`, 'GET', options),
   post: async (route, data) => 
-    await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'POST', Object.assign({}, options, {
+    makeRequest(`${HTTP_ADDRESS}/api${route}`, 'POST', Object.assign({}, options, {
       body: JSON.stringify(data),
       headers: {
         'Accept': 'application/json, text/plain, */*',
@@ -45,13 +47,15 @@ module.exports = {
       }
     })),
   put: async (route, data) => 
-    await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'PUT', Object.assign({
+    makeRequest(`${HTTP_ADDRESS}/api${route}`, 'PUT', Object.assign({
       body: JSON.stringify(data),
       headers: {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json;charset=UTF-8'
       }
     })),
-  delete: async route => 
-    await makeRequest(`${HTTP_ADDRESS}/api${route}`, 'DELETE', options)
+  delete: async route =>
+    makeRequest(`${HTTP_ADDRESS}/api${route}`, 'DELETE', options),
+  head: async route =>
+    fetch(`${HTTP_ADDRESS}/api${route}`, Object.assign({ method: 'HEAD' }, options))
 };

@@ -5,12 +5,28 @@ const onUpdateFns = [];
 
 // Get the config object for the entire CBPi app.
 async function getLogs(){
-  return Object.values(await httpClient.get('/logs/'));
+  return Promise.all(
+    Object.values(await httpClient.get('/logs/'))
+      .map(logName => getLogDetails(logName))
+  );
 }
 
 // Get a specific log file
 async function getLogFile(log){
-  return await httpClient.get(`/logs/${log}`);
+  return await httpClient.get(`/logs/download/${log}`);
+}
+
+// Get the file details of a specific log
+async function getLogDetails(name){
+  const headers = (await httpClient.head(`/logs/download/${name}`)).headers.entries();
+  const details = { name };
+
+  // `headers` is an Iterator and has to be parsed into a hash
+  for (let keypair of headers) {
+    details[keypair[0]] = keypair[1];
+  }
+
+  return details;
 }
 
 // Set the value for a given parameter within the config object.
@@ -32,6 +48,7 @@ const onUpdate = fn => onUpdateFns.push(fn);
 module.exports = {
   getLogs,
   getLogFile,
+  getLogDetails,
   deleteLog,
   onUpdate
 };
