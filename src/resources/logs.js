@@ -1,6 +1,6 @@
 'use strict';
 
-const httpClient = require('./http-client');
+const httpClient = require('../core/http-client');
 const onUpdateFns = [];
 
 // Get the config object for the entire CBPi app.
@@ -19,7 +19,10 @@ async function getLogFile(log){
 // Get the file details of a specific log
 async function getLogDetails(name){
   const headers = (await httpClient.head(`/logs/download/${name}`)).headers.entries();
-  const details = { name };
+  const details = {
+    name,
+    href: `${httpClient.httpAddress}/api/logs/download/${name}`
+  };
 
   // `headers` is an Iterator and has to be parsed into a hash
   for (let keypair of headers) {
@@ -31,15 +34,15 @@ async function getLogDetails(name){
 
 // Set the value for a given parameter within the config object.
 async function deleteLog(log){
-  // Edit the specified parameter by sending a PUT to the API.
-  var response = await httpClient.delete(`/logs/${log}`);
+  // Remove the specified log by sending a PUT to the API.
+  await httpClient.delete(`/logs/${log}`);
 
   // CraftBeerPi can be inconsistent in when it updates its resources via websocket and when it
   // updates its resources only via HTTP response. This function makes it so that a user can rely
   // on the 'onUpdate' function to truly give them all the resource object updates they need.
   onUpdateFns.forEach(fn => fn('DELETE_LOG', log));
 
-  return response;
+  return { name: log };
 }
 
 // Allow clients to register listeners for when the config object updates.

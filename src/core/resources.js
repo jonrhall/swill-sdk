@@ -3,6 +3,7 @@
   'actors',
   'fermenters',
   'kettles',
+  'logs',
   'messages',
   'sensors',
   'steps'

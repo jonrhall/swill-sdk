@@ -34,6 +34,7 @@ async function makeRequest(route, method, options){
 
 // Expose basic HTTP CRUD operations, and a special system dump command.
 module.exports = {
+  httpAddress: HTTP_ADDRESS,
   get: async route => 
     makeRequest(`${HTTP_ADDRESS}/api${route}`, 'GET', options),
   getSystemDump: async () => 

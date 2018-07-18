@@ -17,7 +17,6 @@ module.exports = function SwillSDK(config){
     socketClient: require('./core/socket-client'),
     httpClient: require('./core/http-client'),
     resources: require('./core/resources'),
-    config: require('./core/config'),
-    logs: require('./core/logs')
+    config: require('./core/config')
   });
 };
