@@ -5,6 +5,7 @@
   'kettles',
   'logs',
   'messages',
+  'plugins',
   'sensors',
   'steps'
 ].forEach(resource => 

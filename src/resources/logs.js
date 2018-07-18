@@ -1,5 +1,3 @@
-'use strict';
-
 const httpClient = require('../core/http-client');
 const onUpdateFns = [];
 
@@ -13,7 +11,7 @@ async function getLogs(){
 
 // Get a specific log file
 async function getLogFile(log){
-  return await httpClient.get(`/logs/download/${log}`);
+  return httpClient.get(`/logs/download/${log}`);
 }
 
 // Get the file details of a specific log
