@@ -9,7 +9,7 @@ socketClient.on('UPDATE_CONFIG', data => onUpdateFns.forEach(fn => fn('UPDATE_CO
 
 // Get the config object for the entire CBPi app.
 async function getConfig(){
-  return (await httpClient.getSystemDump()).config;
+  return Object.values((await httpClient.getSystemDump()).config);
 }
 
 // Set the value for a given parameter within the config object.
