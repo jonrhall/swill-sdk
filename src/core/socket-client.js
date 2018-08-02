@@ -12,22 +12,33 @@ const events = ['connect', 'disconnect', "SWITCH_ACTOR", "SENSOR_UPDATE", "UPDAT
 // Keep track of all socket listeners
 const listeners = {};
 
+const oneTimeListeners = {};
+
 // Register a function to handle each known socket event. When a known event occurs,
 // call any listeners that may have registered themselves to receive that event.
 events.forEach(event =>
-  socket.on(event, data =>
-    (listeners[event] || []).forEach(listenFn => listenFn(data))));
-
-module.exports = {
-  on: registerListener
-};
+  socket.on(event, (data) => {
+    (listeners[event] || []).forEach(listenFn => listenFn(data));
+    (oneTimeListeners[event] || []).forEach(listenFn => listenFn(data));
+    
+    // If there were any one-time-only listeners on the event, delete them so that
+    // their handlers don't receive any more events.
+    if (oneTimeListeners[event]) {
+      delete oneTimeListeners.event;
+    }
+  })
+);
 
 // Register a listener for a given socket event.
-function registerListener(event, fn){
-  if(!listeners[event]){
-    listeners[event] = [ fn ];
+const registerListener = memObj => (event, fn) => {
+  if(!memObj[event]){
+    memObj[event] = [ fn ];
   } else{
-    listeners[event].push(fn);
+    memObj[event].push(fn);
   }
-}
+};
 
+module.exports = {
+  on: registerListener(listeners),
+  once: registerListener(oneTimeListeners)
+};
